@@ -212,3 +212,4 @@ pip-log.txt
 *.mo
 
 /src/Json/s/Json.hpp
+Source/Json/s/Json.hpp
