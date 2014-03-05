@@ -3,11 +3,93 @@
 
 #include <vector>
 #include <unordered_map>
+#include <boost/predef.h>
+
+namespace NotMoon
+{
+	extern const char* nullString = "";
+	struct Exception
+		: public std::exception
+	{
+	public:
+		using Line = decltype( __LINE__ );
+
+	public:
+		const char* file;
+		const Line line;
+		const char* func;
+		const char* message;
+
+	public:
+		Exception()
+			: file		{ nullString }
+			, line		{ 0 }
+			, func		{ nullString }
+			, message	{ nullString }
+		{
+		}
+		Exception
+		(
+			const char* file,
+			const Line line,
+			const char* func,
+			const char* message
+		)
+			: file		{ file }
+			, line		{ line }
+			, func		{ func }
+			, message	{ message }
+		{
+		}
+		virtual ~Exception()
+		{
+		}
+
+	public:
+		virtual const char* what()
+		{
+			return this->message;
+		}
+	};
+}
+
+#if defined( _DEBUG )
+#	if defined( BOOST_COMP_MSVC )
+#		define NOTMOON_FUNCTION_NAME __FUNCTION__
+#	elif defined( BOOST_COMP_GNUC )
+#		define NOTMOON_FUNCTION_NAME __PRETTY_FUNCTION__
+#	else
+#		define NOTMOON_FUNCTION_NAME __func__
+#	endif
+#	if !defined( NOTMOON_EXCEPTION_DETAIL )
+#		define NOTMOON_EXCEPTION_DETAIL
+#	endif
+#endif
+#if defined( NOTMOON_EXCEPTION_DETAIL )
+#	define NOTMOON_EXCEPTION_CONSTRUCTOR( name ) \
+public: \
+	name \
+	( \
+		const char* file, \
+		const Line line, \
+		const char* func, \
+		const char* message \
+	) \
+		: Exception{ file, line, func, message } \
+	{ \
+	}
+#	define NOTMOON_THROW( type, msg ) throw type{ __FILE__, __LINE__, NOTMOON_FUNCTION_NAME, msg }
+#else
+#	define NOTMOON_THROW( type, msg ) throw type{}
+#	define NOTMOON_EXCEPTION_CONSTRUCTOR( name ) public: name() = default;
+#endif
 
 namespace NotMoon
 {
 	class ParseErrorException
+		: public Exception
 	{
+		NOTMOON_EXCEPTION_CONSTRUCTOR( ParseErrorException );
 	};
 
 	namespace Json
@@ -58,7 +140,7 @@ namespace NotMoon
 				:offset( 0 )
 				, maxSize( init_size )
 			{
-				chunks.push_back( new char[ maxSize ] );
+				chunks.push_back( NOTMOON_NEW char[ maxSize ] );
 			}
 			~Chunk()
 			{
@@ -107,7 +189,7 @@ namespace NotMoon
 				{
 					// メモリが足りない場合は、chunkを増やす
 					this->cnk.maxSize *= 2;
-					this->cnk.chunks.push_back( new char[ this->cnk.maxSize ] );
+					this->cnk.chunks.push_back( NOTMOON_NEW char[ this->cnk.maxSize ] );
 					this->cnk.offset=0;
 
 					return allocate( num ); // もう一度allocate
@@ -157,8 +239,6 @@ namespace NotMoon
 				}
 			}
 
-			// chunkの未使用メモリ開始位置(offset)を設定する
-			// JSONのparse_stringのために、特別に用意
 			void setTail( char* ptr )
 			{
 				this->cnk.offset = ptr - this->cnk.chunks.back();
@@ -283,14 +363,33 @@ namespace NotMoon
 			}
 		};
 
-		class Value;
+		struct EqualCString
+		{
+			bool operator()( const char* l, const char* r )
+			{
+				return ( std::strcmp( l, r ) == 0 );
+			}
+		};
 
+		struct HashCString
+		{
+			size_t operator()( const char* l )
+			{
+				static std::hash<std::string> hash;
+				return hash( std::string{ l } );
+			}
+		};
+
+		class Value;
 		using Null			= unsigned int;
 		using Boolean		= bool;
 		using Number		= double;
-		using String		= std::string;
-		using Array			= std::vector< Value >;
-		using Pair			= std::pair< std::string, Value >;
+		using String		= char;
+		using StringImpl	= char*;
+		using Pair			= std::pair< char*, Value >;
+		using Map			= std::unordered_map< const char*, Value, HashCString, EqualCString, Allocator< Pair > >;
+		using Vector		= std::vector< Value, Allocator< Value > >;
+		class Array;
 		class Object;
 
 		class Value
@@ -332,27 +431,36 @@ namespace NotMoon
 
 		public:
 			template<class T>
-			T& as()
+			T* as()
 			{
 				return static_cast<const T*>( this->p );
 			}
 		};
 
-		using Map = std::unordered_map< std::string, Value >;
+		class Array
+			: public Vector
+		{
+		public:
+			Array( Allocator< Value > c )
+				: Vector{ c }
+			{
+			}
+		};
+
 
 		class Object
 			: public Map
 		{
 		public:
-			Object()
+			Object( Allocator< Pair > c )
+				: Map{ c }
 			{
 			}
 
 			Value& operator[]( const std::string& key )
 			{
 				static Value undefined;
-
-				auto it = this->find( key );
+				auto it = this->find( key.c_str() );
 				if( it != this->end() )
 				{
 					return it->second;
@@ -368,7 +476,7 @@ namespace NotMoon
 			{
 				static const Value undefined;
 
-				auto it = this->find( key );
+				auto it = this->find( key.c_str() );
 				if( it != this->end() )
 				{
 					return it->second;
@@ -382,52 +490,108 @@ namespace NotMoon
 
 
 		template<>
-		Array& Value::as<Array>()
+		Array* Value::as<Array>()
 		{
-			return *( static_cast<Array*>( const_cast<void*>( p ) ) );
+			return static_cast<Array*>( const_cast<void*>( p ) );
 		}
 		template<>
-		Object& Value::as<Object>()
+		Object* Value::as<Object>()
 		{
-			return *( static_cast<Object*>( const_cast<void*>( p ) ) );
+			return static_cast<Object*>( const_cast<void*>( p ) );
 		}
 		template<>
-		Number& Value::as<Number>()
+		Number* Value::as<Number>()
 		{
-			return *( static_cast<Number*>( const_cast<void*>( p ) ) );
+			return static_cast<Number*>( const_cast<void*>( p ) );
 		}
 		template<>
-		String& Value::as<String>()
+		StringImpl Value::as<String>()
 		{
-			return *( static_cast<String*>( const_cast<void*>( p ) ) );
+			return static_cast<String*>( const_cast<void*>( p ) );
 		}
 
-		class Temporary
-			: public std::vector<char>
+		class StringBuffer
 		{
+		private:
+			char*				buffer;
+			size_t				length;
+			size_t				max;
+			Allocator<char>&	allocator;
+
 		public:
-			Temporary()
+			StringBuffer( Allocator<char>& allocator, size_t s = 0 )
+				: allocator{ allocator }
 			{
+				this->initialize( s );
+			}
+
+			void initialize( size_t size = 0 )
+			{
+				this->buffer = this->allocator.allocate( size );
+				this->length = 0;
+				this->max = size;
 			}
 
 			void append( char c )
 			{
-				this->push_back( c );
+				if( this->max < 1 + this->length )
+				{
+					this->resize( 1 );
+				}
+				this->buffer[ this->length++ ] = c;
 			}
+
 			void append( const char* begin, const char* end )
 			{
-				this->insert( this->end(), begin, end );
+				size_t s = end - begin;
+				if( this->max < s + this->length )
+				{
+					this->resize( s );
+				}
+				copy( this->buffer + this->length, begin, s );
+				this->length += s;
 			}
 
 			void operator+=( char c )
 			{
-				this->push_back( c );
+				this->append( c );
 			}
 
-			char* c_str()
+			char* getEnd()
+				const
 			{
-				this->push_back( '\0' );
-				return this->data();
+				return this->buffer + this->length;
+			}
+
+			char* getBuffer()
+				const
+			{
+				return this->buffer;
+			}
+
+			char* convertCString()
+			{
+				this->append( '\0' );
+				return this->buffer;
+			}
+
+			void resize( size_t num )
+			{
+				if( this->allocator.isRange( this->buffer + this->length + num ) )
+				{
+					char* t = this->allocator.allocate( num + this->length );
+					copy( t, this->buffer, this->length );
+					this->buffer = t;
+				}
+			}
+
+		public:
+			static inline void copy( char* target, const char* source, size_t n )
+			{
+				for( size_t i = 0; i < n; ++i )
+				{
+					target[ i ] = source[ i ];
+				}
 			}
 		};
 
@@ -437,7 +601,8 @@ namespace NotMoon
 			using Function = Value( Parser::* )( Reader& );
 			using FunctionArray = Value( Parser::*[ 256 ] )( Reader& );
 			Chunk memory;
-			Allocator<char>	alloc;
+			Allocator<char>	allocator;
+			StringBuffer buffer;
 			static const bool constantTrue = true;
 			static const bool constantFalse = false;
 			static const unsigned int constantNull = 0;
@@ -480,14 +645,15 @@ namespace NotMoon
 
 		public:
 			Parser()
-				: alloc{ this->memory }
+				: allocator{ this->memory }
+				, buffer{ this->allocator }
 			{
 				
 			}
 
 			Value parse( const char* begin, const char* end )
 			{
-				this->alloc.reset();
+				this->allocator.reset();
 				Reader in{ begin, end };
 				return this->parseValue( in );
 			}
@@ -495,6 +661,7 @@ namespace NotMoon
 		private:
 			Value parseNumber( Reader& in )
 			{
+				this->buffer.initialize();
 				const char* begin = in.getCurrent() - 1;
 
 				for( char c = in.getPrevious();; c = in.read() )
@@ -516,17 +683,16 @@ namespace NotMoon
 					}
 				}
 			end:
-				Temporary buffer;
 				buffer.append( begin, in.getCurrent() );
-				buffer.c_str();
+				buffer.convertCString();
 				char* end;
-				double *d = reinterpret_cast<double*>( this->alloc.allocate( sizeof( double ) ) );
-				*d = std::strtod( buffer.c_str(), &end );
+				double *d = reinterpret_cast<double*>( this->allocator.allocate( sizeof( double ) ) );
+				*d = std::strtod( buffer.convertCString(), &end );
 				return Value( Value::Type::Number, d );
 			}
 			Value parseObject( Reader& in )
 			{
-				Object* o = new( this->alloc.allocate( sizeof( Object ) ) ) Object();
+				Object* o = new( this->allocator.allocate( sizeof( Object ) ) ) Object{ this->memory };
 
 				if( in.skipSpace() != '}' )
 				{
@@ -538,7 +704,7 @@ namespace NotMoon
 							Value key = parseString( in );
 							if( in.skipSpace() == ':' )
 							{
-								auto& k = key.as<String>();
+								auto k = key.as<String>();
 								o->insert( Pair{ k, parseValue( in ) } );
 							}
 						}
@@ -549,7 +715,7 @@ namespace NotMoon
 			}
 			Value parseArray( Reader& in )
 			{
-				Array *a = new( this->alloc.allocate( sizeof( Array ) ) ) Array( 0, Value() );
+				Array *a = new( this->allocator.allocate( sizeof( Array ) ) ) Array{ this->memory };
 
 				if( in.skipSpace() != ']' )
 				{
@@ -565,7 +731,7 @@ namespace NotMoon
 			Value	parseString( Reader& in )
 			{
 				// "\uXXXX"形式の文字列を読み込む(UTF-8に変換する)
-				static auto parseUtf16 = []( Reader& in, Temporary& s )
+				static auto parseUtf16 = []( Reader& in, StringBuffer& s )
 				{
 					// 16進数表記の文字を二つ読み込み、数値(8bit)に変換する
 					static auto readHex = []( Reader& in )
@@ -605,30 +771,30 @@ namespace NotMoon
 					}
 				};
 
-				Temporary buffer;
+				this->buffer.initialize();
 				const char* begin = in.getCurrent();
 				for( char c = in.read();; c = in.read() )
 				{
 					switch( c )
 					{
 					case '\\':
-						buffer.append( begin, in.getCurrent() - 1 );
+						this->buffer.append( begin, in.getCurrent() - 1 );
 						switch( in.read() )
 						{
-						case 'b': buffer += '\b'; break;
-						case 'f': buffer += '\f'; break;
-						case 't': buffer += '\t'; break;
-						case 'r': buffer += '\r'; break;
-						case 'n': buffer += '\n'; break;
-						case 'u': parseUtf16( in, buffer ); break;
-						default: buffer += in.getPrevious();
+						case 'b': this->buffer += '\b'; break;
+						case 'f': this->buffer += '\f'; break;
+						case 't': this->buffer += '\t'; break;
+						case 'r': this->buffer += '\r'; break;
+						case 'n': this->buffer += '\n'; break;
+						case 'u': parseUtf16( in, this->buffer ); break;
+						default: this->buffer += in.getPrevious();
 						}
 						begin = in.getCurrent();
 						break;
 					case '"':
-						buffer.append( begin, in.getCurrent() - 1 );
-						std::string* s = new( this->alloc.allocate( sizeof( std::string ) ) ) std::string{ buffer.c_str() };
-						return Value{ Value::Type::String, s };
+						this->buffer.append( begin, in.getCurrent() - 1 );
+						this->allocator.setTail( this->buffer.getEnd() + 1 );
+						return Value{ Value::Type::String, this->buffer.convertCString() };
 					}
 				}
 				return this->getUndefined();
