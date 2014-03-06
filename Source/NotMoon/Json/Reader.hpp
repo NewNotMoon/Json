@@ -52,6 +52,9 @@ namespace NotMoon
 			const char* end;
 
 		public:
+			Reader()
+			{
+			}
 			Reader( const char* begin, const char* end )
 				: begin{ begin }
 				, current{ begin }
@@ -63,6 +66,18 @@ namespace NotMoon
 				, current{ begin }
 				, end{ begin + size }
 			{
+			}
+			void initialize( const char* begin, const char* end )
+			{
+				this->begin = begin;
+				this->current = begin;
+				this->end = end;
+			}
+			void initialize( const char* begin, size_t size )
+			{
+				this->begin = begin;
+				this->current = begin;
+				this->end = begin + size;
 			}
 			char read()
 			{

@@ -49,18 +49,19 @@ namespace NotMoon
 		class Parser
 		{
 		private:
-			using Function = Value( Parser::* )( Reader& );
-			using FunctionArray = Value( Parser::*[ 256 ] )( Reader& );
 			Chunk memory;
 			Allocator<char>	allocator;
 			StringBuffer buffer;
+			Reader reader;
 			static const bool constantTrue = true;
 			static const bool constantFalse = false;
 			static const unsigned int constantNull = 0;
+
 			struct FunctionTable
 			{
 			private:
-				FunctionArray table;
+				using Function = Value( Parser::* )();
+				Function table[256];
 
 			public:
 				FunctionTable()
@@ -69,22 +70,124 @@ namespace NotMoon
 					{
 						i = &Parser::parseNumber;
 					}
-					this->table[ '{' ] = &Parser::parseObject;
-					this->table[ '[' ] = &Parser::parseArray;
-					this->table[ '"' ] = &Parser::parseString;
-					this->table[ 't' ] = &Parser::parseTrue;
-					this->table[ 'f' ] = &Parser::parseFalse;
-					this->table[ 'n' ] = &Parser::parseNull;
+
+					this->table[ '{' ]	= &Parser::parseObject;
+					this->table[ '[' ]	= &Parser::parseArray;
+					this->table[ '"' ]	= &Parser::parseString;
+					this->table[ 't' ]	= &Parser::parseTrue;
+					this->table[ 'f' ]	= &Parser::parseFalse;
+					this->table[ 'n' ]	= &Parser::parseNull;
 				}
 				Function operator[]( const char c )
+					const
 				{
 					return this->table[ c ];
 				}
 			};
 
-			static FunctionTable& getParseTable()
+			static const unsigned char escapeNumber = 31;
+			static const unsigned char escapeNumberValue = 254;
+			static const unsigned char escapeString = 5;
+
+			struct ConvertTable
 			{
-				static FunctionTable table;
+			private:
+				using Function = void( Parser::* )();
+
+			public:
+				enum class Tag
+					: char
+				{
+					Undefined,
+					Hex,
+					Escape,
+					Number,
+				};
+				template < class T >
+				struct Value
+				{
+					Tag tag;
+					T value;
+				};
+
+			private:
+				union Union
+				{ 
+					Value< Function > escape;
+					Value< unsigned char > hex;
+					Value< unsigned char > number;
+				} table[ 256 ];
+
+			public:
+				ConvertTable()
+				{
+					for( auto& i : this->table )
+					{
+						i.escape ={ Tag::Undefined, nullptr };
+					}
+					this->table[ '0' ].hex = { Tag::Hex, 0 };
+					this->table[ '1' ].hex = { Tag::Hex, 1 };
+					this->table[ '2' ].hex = { Tag::Hex, 2 };
+					this->table[ '3' ].hex = { Tag::Hex, 3 };
+					this->table[ '4' ].hex = { Tag::Hex, 4 };
+					this->table[ '5' ].hex = { Tag::Hex, 5 };
+					this->table[ '6' ].hex = { Tag::Hex, 6 };
+					this->table[ '7' ].hex = { Tag::Hex, 7 };
+					this->table[ '8' ].hex = { Tag::Hex, 8 };
+					this->table[ '9' ].hex = { Tag::Hex, 9 };
+					this->table[ 'a' ].hex = { Tag::Hex, 10 };
+					this->table[ 'A' ].hex = { Tag::Hex, 10 };
+					this->table[ 'b' ].hex = { Tag::Hex, 11 };
+					this->table[ 'B' ].hex = { Tag::Hex, 11 };
+					this->table[ 'c' ].hex = { Tag::Hex, 12 };
+					this->table[ 'C' ].hex = { Tag::Hex, 12 };
+					this->table[ 'd' ].hex = { Tag::Hex, 13 };
+					this->table[ 'D' ].hex = { Tag::Hex, 13 };
+					this->table[ 'e' ].hex = { Tag::Hex, 14 };
+					this->table[ 'E' ].hex = { Tag::Hex, 14 };
+					this->table[ 'f' ].hex = { Tag::Hex, 15 };
+					this->table[ 'F' ].hex = { Tag::Hex, 15 };
+
+					this->table[ 'b' + escapeString ].escape ={ Tag::Escape, &Parser::appendBufferB };
+					this->table[ 'f' + escapeString ].escape ={ Tag::Escape, &Parser::appendBufferF };
+					this->table[ 't' + escapeString ].escape ={ Tag::Escape, &Parser::appendBufferT };
+					this->table[ 'r' + escapeString ].escape ={ Tag::Escape, &Parser::appendBufferR };
+					this->table[ 'n' + escapeString ].escape ={ Tag::Escape, &Parser::appendBufferN };
+					this->table[ 'u' + escapeString ].escape ={ Tag::Escape, &Parser::parseUtf16 };
+
+
+					this->table[ '0' - escapeNumber ].hex = { Tag::Number, escapeNumberValue };
+					this->table[ '1' - escapeNumber ].hex = { Tag::Number, escapeNumberValue };
+					this->table[ '2' - escapeNumber ].hex = { Tag::Number, escapeNumberValue };
+					this->table[ '3' - escapeNumber ].hex = { Tag::Number, escapeNumberValue };
+					this->table[ '4' - escapeNumber ].hex = { Tag::Number, escapeNumberValue };
+					this->table[ '5' - escapeNumber ].hex = { Tag::Number, escapeNumberValue };
+					this->table[ '6' - escapeNumber ].hex = { Tag::Number, escapeNumberValue };
+					this->table[ '7' - escapeNumber ].hex = { Tag::Number, escapeNumberValue };
+					this->table[ '8' - escapeNumber ].hex = { Tag::Number, escapeNumberValue };
+					this->table[ '9' - escapeNumber ].hex = { Tag::Number, escapeNumberValue };
+					this->table[ '+' - escapeNumber ].hex = { Tag::Number, escapeNumberValue };
+					this->table[ '-' - escapeNumber ].hex = { Tag::Number, escapeNumberValue };
+					this->table[ 'e' - escapeNumber ].hex = { Tag::Number, escapeNumberValue };
+					this->table[ 'E' - escapeNumber ].hex = { Tag::Number, escapeNumberValue };
+					this->table[ '.' - escapeNumber ].hex = { Tag::Number, escapeNumberValue };
+				}
+				Union operator[]( const char c )
+					const
+				{
+					return this->table[ c ];
+				}
+			};
+
+			static const FunctionTable& getFunctionTable()
+			{
+				static const FunctionTable table;
+				return table;
+			}
+
+			static const ConvertTable& getConvertTable()
+			{
+				static const ConvertTable table;
 				return table;
 			}
 
@@ -99,184 +202,187 @@ namespace NotMoon
 				: allocator{ this->memory }
 				, buffer{ this->allocator }
 			{
-				
 			}
 
 			Value parse( const char* begin, const char* end )
 			{
 				this->allocator.reset();
-				Reader in{ begin, end };
-				return this->parseValue( in );
+				this->reader.initialize( begin, end );
+				return this->parseValue();
 			}
 
 		private:
-			Value parseNumber( Reader& in )
+			Value parseValue()
+			{
+				return ( this->*getFunctionTable()[ this->reader.skipSpace() ] )( );
+			}
+			Value parseNumber()
 			{
 				this->buffer.initialize();
-				const char* begin = in.getCurrent() - 1;
+				const char* begin = this->reader.getCurrent() - 1;
 
-				for( char c = in.getPrevious();; c = in.read() )
+				for( char c = this->reader.getPrevious();; c = this->reader.read() )
 				{
-					switch( c )
+					if( this->getConvertTable()[ c ].number.tag == ConvertTable::Tag::Number )
 					{
-					case '0': case '1': case '2': case '3': case '4':
-					case '5': case '6': case '7': case '8': case '9':
-					case '+': case '-': case '.': case 'e': case 'E':
-						if( in.isEof() )
+						if( this->reader.isEof() )
 						{
 							goto end;
 						}
-						break;
-
-					default:
-						in.goBack();
+					}
+					else
+					{
+						this->reader.goBack();
 						goto end;
 					}
 				}
 			end:
-				buffer.append( begin, in.getCurrent() );
+				buffer.append( begin, this->reader.getCurrent() );
 				buffer.convertCString();
 				char* end;
 				double *d = reinterpret_cast<double*>( this->allocator.allocate( sizeof( double ) ) );
 				*d = std::strtod( buffer.convertCString(), &end );
 				return Value( Value::Type::Number, d );
 			}
-			Value parseObject( Reader& in )
+			Value parseObject()
 			{
 				Object* o = new( this->allocator.allocate( sizeof( Object ) ) ) Object{ this->memory };
 
-				if( in.skipSpace() != '}' )
+				if( this->reader.skipSpace() != '}' )
 				{
-					in.goBack();
+					this->reader.goBack();
 					do
 					{
-						if( in.skipSpace() == '"' )
+						if( this->reader.skipSpace() == '"' )
 						{
-							Value key = parseString( in );
-							if( in.skipSpace() == ':' )
+							Value key = parseString();
+							if( this->reader.skipSpace() == ':' )
 							{
 								auto k = key.as<String>();
-								o->insert( Pair{ k, parseValue( in ) } );
+								o->insert( Pair{ k, parseValue() } );
 							}
 						}
 					}
-					while( in.skipSpace() == ',' );
+					while( this->reader.skipSpace() == ',' );
 				}
 				return Value( Value::Type::Object, o );
 			}
-			Value parseArray( Reader& in )
+			Value parseArray()
 			{
 				Array *a = new( this->allocator.allocate( sizeof( Array ) ) ) Array{ this->memory };
 
-				if( in.skipSpace() != ']' )
+				if( this->reader.skipSpace() != ']' )
 				{
-					in.goBack();
+					this->reader.goBack();
 					do
 					{
-						a->push_back( parseValue( in ) );
+						a->push_back( parseValue() );
 					}
-					while( in.skipSpace() == ',' );
+					while( this->reader.skipSpace() == ',' );
 				}
 				return Value( Value::Type::Array, a );
 			}
-			Value	parseString( Reader& in )
+			// 文字を16進数で解釈して、対応する数値を返す
+			char convertCharToHex()
 			{
-				// "\uXXXX"形式の文字列を読み込む(UTF-8に変換する)
-				static auto parseUtf16 = []( Reader& in, StringBuffer& s )
+				return this->getConvertTable()[ this->reader.read() ].hex.value;
+			};
+			// 16進数表記の文字を二つ読み込み、数値(8bit)に変換する
+			char readHex()
+			{
+				return this->convertCharToHex() << 4 | this->convertCharToHex();
+			};
+			// "\uXXXX"形式の文字列を読み込む(UTF-8に変換する)
+			void parseUtf16()
+			{
+				char fst = this->readHex();
+				char snd = this->readHex();
+
+				if( isSurrogate( fst ) )
 				{
-					// 16進数表記の文字を二つ読み込み、数値(8bit)に変換する
-					static auto readHex = []( Reader& in )
-						-> char
+					if( this->reader.read() == '\\' && this->reader.read() == 'u' )
 					{
-						// 文字を16進数で解釈して、対応する数値を返す
-						static auto convertCharToHex = []( Reader& in )
-						{
-							switch( in.read() )
-							{
-#define MAP(c,n)		case c: return n;
-#define MAP2(c1,c2,n)	case c1: case c2: return n;
-								MAP( '0', 0 ); MAP( '1', 1 ); MAP( '2', 2 ); MAP( '3', 3 ); MAP( '4', 4 );	MAP( '5', 5 ); MAP( '6', 6 ); MAP( '7', 7 ); MAP( '8', 8 ); MAP( '9', 9 );
-								MAP2( 'a', 'A', 10 ); MAP2( 'b', 'B', 11 ); MAP2( 'c', 'C', 12 ); MAP2( 'd', 'D', 13 ); MAP2( 'e', 'E', 14 ); MAP2( 'f', 'F', 15 );
-#undef MAP
-#undef MAP2
-							default:
-								_ASSERT( false );
-							}
-							return -1;
-						};
-						return convertCharToHex( in ) << 4 | convertCharToHex( in );
-					};
-					char fst = readHex( in );
-					char snd = readHex( in );
-
-					if( isSurrogate( fst ) )
-					{
-						if( in.read() == '\\' && in.read() == 'u' )
-						{
-							encodeSurrogateUcs2ToUtf8( fst, snd, readHex( in ), readHex( in ), s );
-						}
+						encodeSurrogateUcs2ToUtf8( fst, snd, this->readHex(), this->readHex(), this->buffer );
 					}
-					else
-					{
-						encodeUcs2ToUtf8( fst, snd, s );
-					}
-				};
-
+				}
+				else
+				{
+					encodeUcs2ToUtf8( fst, snd, this->buffer );
+				}
+			};
+			void appendBufferB()
+			{
+				this->buffer += '\b';
+			}
+			void appendBufferF()
+			{
+				this->buffer += '\f';
+			}
+			void appendBufferT()
+			{
+				this->buffer += '\t';
+			}
+			void appendBufferR()
+			{
+				this->buffer += '\r';
+			}
+			void appendBufferN()
+			{
+				this->buffer += '\n';
+			}
+			Value parseString()
+			{
 				this->buffer.initialize();
-				const char* begin = in.getCurrent();
-				for( char c = in.read();; c = in.read() )
+				const char* begin = this->reader.getCurrent();
+				unsigned char i;
+				for( char c = this->reader.read();; c = this->reader.read() )
 				{
 					switch( c )
 					{
 					case '\\':
-						this->buffer.append( begin, in.getCurrent() - 1 );
-						switch( in.read() )
+						this->buffer.append( begin, this->reader.getCurrent() - 1 );
+						i = this->reader.read() + this->escapeString;
+						if( this->getConvertTable()[ i ].escape.tag == ConvertTable::Tag::Escape )
 						{
-						case 'b': this->buffer += '\b'; break;
-						case 'f': this->buffer += '\f'; break;
-						case 't': this->buffer += '\t'; break;
-						case 'r': this->buffer += '\r'; break;
-						case 'n': this->buffer += '\n'; break;
-						case 'u': parseUtf16( in, this->buffer ); break;
-						default: this->buffer += in.getPrevious();
+							( this->*getConvertTable()[ i ].escape.value )();
 						}
-						begin = in.getCurrent();
+						else
+						{
+							this->buffer += this->reader.getPrevious();
+						}
+						begin = this->reader.getCurrent();
 						break;
 					case '"':
-						this->buffer.append( begin, in.getCurrent() - 1 );
+						this->buffer.append( begin, this->reader.getCurrent() - 1 );
 						this->allocator.setTail( this->buffer.getEnd() + 1 );
 						return Value{ Value::Type::String, this->buffer.convertCString() };
 					}
 				}
 				return this->getUndefined();
 			}
-			Value parseTrue( Reader& in )
+			Value parseTrue()
 			{
-				if( in.read() == 'r' && in.read() == 'u' && in.read() == 'e' && in.getEnd() )
+				if( this->reader.read() == 'r' && this->reader.read() == 'u' && this->reader.read() == 'e' && this->reader.getEnd() )
 				{
 					return Value{ Value::Type::Boolean, &this->constantTrue };
 				}
 				return this->getUndefined();
 			}
-			Value parseFalse( Reader& in )
+			Value parseFalse()
 			{
-				if( in.read() == 'a' && in.read() == 'l' && in.read() == 's' && in.read() == 'e' && in.getEnd() )
+				if( this->reader.read() == 'a' && this->reader.read() == 'l' && this->reader.read() == 's' && this->reader.read() == 'e' && this->reader.getEnd() )
 				{
 					return Value{ Value::Type::Boolean, &this->constantFalse };
 				}
 				return this->getUndefined();
 			}
-			Value parseNull( Reader& in )
+			Value parseNull()
 			{
-				if( in.read() == 'u' && in.read() == 'l' && in.read() == 'l' && in.getEnd() )
+				if( this->reader.read() == 'u' && this->reader.read() == 'l' && this->reader.read() == 'l' && this->reader.getEnd() )
 				{
 					return Value{ Value::Type::Null, &this->constantNull };
 				}
 				return this->getUndefined();
-			}
-			Value parseValue( Reader& in )
-			{
-				return (this->*getParseTable()[ in.skipSpace() ])( in );
 			}
 		};
 	}
