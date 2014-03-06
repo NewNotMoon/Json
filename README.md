@@ -62,6 +62,9 @@ DEALINGS IN THE SOFTWARE.
 
 ### Boost.Predef 1.0
 Rene Rivera
+
 Copyright © 2005 Rene Rivera
+
 Copyright © 2008-2013 Redshift Software Inc
+
 Distributed under the Boost Software License, Version 1.0.
