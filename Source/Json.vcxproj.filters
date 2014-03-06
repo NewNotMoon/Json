@@ -1,19 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Sample">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
     <Filter Include="Source">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Source\Json">
       <UniqueIdentifier>{ae9a2509-44ed-45a1-8942-7b5489314e67}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Test">
-      <UniqueIdentifier>{82760402-d193-47b5-8937-2e40db381a76}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Json\Json">
       <UniqueIdentifier>{7787e5d8-c4b5-4081-af0a-d37ec356ffde}</UniqueIdentifier>
@@ -24,26 +17,62 @@
     <Filter Include="Document">
       <UniqueIdentifier>{0a16abce-88d7-4b38-8731-780cd3af80d8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Sample">
+      <UniqueIdentifier>{82760402-d193-47b5-8937-2e40db381a76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Json\Exception">
+      <UniqueIdentifier>{137c6b63-ef68-4e11-8c03-7aacd84119e3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Json\s\Json.hpp">
-      <Filter>Sample</Filter>
-    </ClInclude>
     <ClInclude Include="Json\Json.hpp">
       <Filter>Source\Json\Json</Filter>
     </ClInclude>
     <ClInclude Include="Debug\Debug.hpp">
       <Filter>Source\Json\Debug</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Test\Test.cpp">
-      <Filter>Source\Test</Filter>
-    </ClCompile>
+    <ClInclude Include="Exception\Exception.hpp">
+      <Filter>Source\Json\Exception</Filter>
+    </ClInclude>
+    <ClInclude Include="Json\Chunk.hpp">
+      <Filter>Source\Json\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="Json\Allocator.hpp">
+      <Filter>Source\Json\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="Json\Reader.hpp">
+      <Filter>Source\Json\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="Json\Array.hpp">
+      <Filter>Source\Json\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="Json\Value.hpp">
+      <Filter>Source\Json\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="Json\Object.hpp">
+      <Filter>Source\Json\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="Json\StringBuffer.hpp">
+      <Filter>Source\Json\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="Json\Parser.hpp">
+      <Filter>Source\Json\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="Json\Exception.hpp">
+      <Filter>Source\Json\Json</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md">
       <Filter>Document</Filter>
     </None>
+    <None Include="Sample.json">
+      <Filter>Source\Sample</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Sample.cpp">
+      <Filter>Source\Sample</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

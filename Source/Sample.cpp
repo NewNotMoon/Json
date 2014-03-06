@@ -1,6 +1,6 @@
 
-#include "../Debug/Debug.hpp"
-#include "../Json/Json.hpp"
+#include "Debug/Debug.hpp"
+#include "Json/Json.hpp"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -10,9 +10,9 @@ int main()
 	NotMoon::Debug d;
 	try
 	{
-		NOTMOON_THROW( NotMoon::ParseErrorException, "test" );
+		NOTMOON_THROW( NotMoon::Json::ParseErrorException, "test" );
 	}
-	catch( const NotMoon::ParseErrorException& e )
+	catch( const NotMoon::Json::ParseErrorException& e )
 	{
 #if defined( NOTMOON_EXCEPTION_DETAIL )
 		std::cout
@@ -24,7 +24,7 @@ int main()
 	}
 	using namespace NotMoon;
 	Json::Parser parser;
-	std::ifstream f{ "Test/test.json" };
+	std::ifstream f{ "Sample.json" };
 	std::vector<char> buffer;
 	buffer.resize( static_cast<unsigned int>( f.seekg( 0, std::ios::end ).tellg() ) );
 	f.seekg( 0, std::ios::beg ).read( &buffer[ 0 ], static_cast<std::streamsize>( buffer.size() ) );
@@ -33,5 +33,7 @@ int main()
 	auto obj = *arr[ 0 ].as<Json::Object>();
 	auto str = obj[ "created_at" ].as<Json::String>();
 	std::cout << str;
-	//std::cin >> std::string{};
+#ifndef _DEBUG
+	std::cin >> std::string{};
+#endif
 }
