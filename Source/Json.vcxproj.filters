@@ -23,6 +23,9 @@
     <Filter Include="Source\Sample">
       <UniqueIdentifier>{dfa90828-aad6-4de1-b826-6957a804725c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\NotMoon\Meta">
+      <UniqueIdentifier>{eb5984bb-bf60-4bf4-99ae-c15e92267538}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md">
@@ -68,6 +71,9 @@
     </ClInclude>
     <ClInclude Include="NotMoon\Exception\Exception.hpp">
       <Filter>Source\NotMoon\Exception</Filter>
+    </ClInclude>
+    <ClInclude Include="NotMoon\Meta\Meta.hpp">
+      <Filter>Source\NotMoon\Meta</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

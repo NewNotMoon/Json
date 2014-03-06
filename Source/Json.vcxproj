@@ -175,6 +175,7 @@
     <ClInclude Include="NotMoon\Json\Reader.hpp" />
     <ClInclude Include="NotMoon\Json\StringBuffer.hpp" />
     <ClInclude Include="NotMoon\Json\Value.hpp" />
+    <ClInclude Include="NotMoon\Meta\Meta.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sample\Sample.cpp" />

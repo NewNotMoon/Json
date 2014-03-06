@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include "../Debug/Debug.hpp"
 #include "Allocator.hpp"
+#include "../Meta/Meta.hpp"
 
 namespace NotMoon
 {
@@ -31,8 +32,7 @@ namespace NotMoon
 		using Null			= unsigned int;
 		using Boolean		= bool;
 		using Number		= double;
-		using String		= char;
-		using StringImpl	= char*;
+		using String		= char*;
 		using Pair			= std::pair< char*, Value >;
 		using Map			= std::unordered_map< const char*, Value, HashCString, EqualCString, Allocator< Pair > >;
 		using Vector		= std::vector< Value, Allocator< Value > >;
@@ -77,23 +77,20 @@ namespace NotMoon
 			}
 
 		public:
-			template<class T>
-			T* as()
-			{
-				return static_cast<const T*>( this->p );
-			}
+			template< typename T >
+			Meta::IfPointerThenConstPointerElseConstLvalueReferense< T > as();
 		};
 
 		template<>
-		Number* Value::as<Number>()
+		Meta::IfPointerThenConstPointerElseConstLvalueReferense< Number > Value::as<Number>()
 		{
-			return static_cast<Number*>( const_cast<void*>( p ) );
+			return *static_cast<Number*>( const_cast<void*>( p ) );
 		}
 
 		template<>
-		StringImpl Value::as<String>()
+		Meta::IfPointerThenConstPointerElseConstLvalueReferense< String > Value::as<String>()
 		{
-			return static_cast<String*>( const_cast<void*>( p ) );
+			return static_cast<String>( const_cast<void*>( p ) );
 		}
 	}
 }
