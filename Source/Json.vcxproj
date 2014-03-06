@@ -159,25 +159,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Debug\Debug.hpp" />
-    <ClInclude Include="Exception\Exception.hpp" />
-    <ClInclude Include="Json\Allocator.hpp" />
-    <ClInclude Include="Json\Array.hpp" />
-    <ClInclude Include="Json\Chunk.hpp" />
-    <ClInclude Include="Json\Exception.hpp" />
-    <ClInclude Include="Json\Json.hpp" />
-    <ClInclude Include="Json\Object.hpp" />
-    <ClInclude Include="Json\Parser.hpp" />
-    <ClInclude Include="Json\Reader.hpp" />
-    <ClInclude Include="Json\StringBuffer.hpp" />
-    <ClInclude Include="Json\Value.hpp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\README.md" />
-    <None Include="Sample.json" />
+    <None Include="Sample\Sample.json" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Sample.cpp" />
+    <ClInclude Include="NotMoon\Debug\Debug.hpp" />
+    <ClInclude Include="NotMoon\Exception\Exception.hpp" />
+    <ClInclude Include="NotMoon\Json.hpp" />
+    <ClInclude Include="NotMoon\Json\Allocator.hpp" />
+    <ClInclude Include="NotMoon\Json\Array.hpp" />
+    <ClInclude Include="NotMoon\Json\Chunk.hpp" />
+    <ClInclude Include="NotMoon\Json\Exception.hpp" />
+    <ClInclude Include="NotMoon\Json\Object.hpp" />
+    <ClInclude Include="NotMoon\Json\Parser.hpp" />
+    <ClInclude Include="NotMoon\Json\Reader.hpp" />
+    <ClInclude Include="NotMoon\Json\StringBuffer.hpp" />
+    <ClInclude Include="NotMoon\Json\Value.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Sample\Sample.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

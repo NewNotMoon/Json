@@ -5,73 +5,73 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Source\Json">
-      <UniqueIdentifier>{ae9a2509-44ed-45a1-8942-7b5489314e67}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Json\Json">
-      <UniqueIdentifier>{7787e5d8-c4b5-4081-af0a-d37ec356ffde}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Json\Debug">
-      <UniqueIdentifier>{ea2af21b-a98b-4ca3-bc40-270b45bad20e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Document">
       <UniqueIdentifier>{0a16abce-88d7-4b38-8731-780cd3af80d8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\NotMoon">
+      <UniqueIdentifier>{bdcb13b2-2fc0-4cff-9d03-d17fb5e0bc80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\NotMoon\Json">
+      <UniqueIdentifier>{388ab584-fb3c-4a1a-8a57-eb376fad4c4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\NotMoon\Debug">
+      <UniqueIdentifier>{cabff91a-5628-410d-9616-420852b0094c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\NotMoon\Exception">
+      <UniqueIdentifier>{097647a5-fbe5-4871-a141-6d0b94ac050c}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source\Sample">
-      <UniqueIdentifier>{82760402-d193-47b5-8937-2e40db381a76}</UniqueIdentifier>
+      <UniqueIdentifier>{dfa90828-aad6-4de1-b826-6957a804725c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Json\Exception">
-      <UniqueIdentifier>{137c6b63-ef68-4e11-8c03-7aacd84119e3}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Json\Json.hpp">
-      <Filter>Source\Json\Json</Filter>
-    </ClInclude>
-    <ClInclude Include="Debug\Debug.hpp">
-      <Filter>Source\Json\Debug</Filter>
-    </ClInclude>
-    <ClInclude Include="Exception\Exception.hpp">
-      <Filter>Source\Json\Exception</Filter>
-    </ClInclude>
-    <ClInclude Include="Json\Chunk.hpp">
-      <Filter>Source\Json\Json</Filter>
-    </ClInclude>
-    <ClInclude Include="Json\Allocator.hpp">
-      <Filter>Source\Json\Json</Filter>
-    </ClInclude>
-    <ClInclude Include="Json\Reader.hpp">
-      <Filter>Source\Json\Json</Filter>
-    </ClInclude>
-    <ClInclude Include="Json\Array.hpp">
-      <Filter>Source\Json\Json</Filter>
-    </ClInclude>
-    <ClInclude Include="Json\Value.hpp">
-      <Filter>Source\Json\Json</Filter>
-    </ClInclude>
-    <ClInclude Include="Json\Object.hpp">
-      <Filter>Source\Json\Json</Filter>
-    </ClInclude>
-    <ClInclude Include="Json\StringBuffer.hpp">
-      <Filter>Source\Json\Json</Filter>
-    </ClInclude>
-    <ClInclude Include="Json\Parser.hpp">
-      <Filter>Source\Json\Json</Filter>
-    </ClInclude>
-    <ClInclude Include="Json\Exception.hpp">
-      <Filter>Source\Json\Json</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md">
       <Filter>Document</Filter>
     </None>
-    <None Include="Sample.json">
+    <None Include="Sample\Sample.json">
       <Filter>Source\Sample</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Sample.cpp">
+    <ClInclude Include="NotMoon\Json.hpp">
+      <Filter>Source\NotMoon</Filter>
+    </ClInclude>
+    <ClInclude Include="NotMoon\Json\Allocator.hpp">
+      <Filter>Source\NotMoon\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="NotMoon\Json\Array.hpp">
+      <Filter>Source\NotMoon\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="NotMoon\Json\Chunk.hpp">
+      <Filter>Source\NotMoon\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="NotMoon\Json\Exception.hpp">
+      <Filter>Source\NotMoon\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="NotMoon\Json\Object.hpp">
+      <Filter>Source\NotMoon\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="NotMoon\Json\Parser.hpp">
+      <Filter>Source\NotMoon\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="NotMoon\Json\Reader.hpp">
+      <Filter>Source\NotMoon\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="NotMoon\Json\StringBuffer.hpp">
+      <Filter>Source\NotMoon\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="NotMoon\Json\Value.hpp">
+      <Filter>Source\NotMoon\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="NotMoon\Debug\Debug.hpp">
+      <Filter>Source\NotMoon\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="NotMoon\Exception\Exception.hpp">
+      <Filter>Source\NotMoon\Exception</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Sample\Sample.cpp">
       <Filter>Source\Sample</Filter>
     </ClCompile>
   </ItemGroup>

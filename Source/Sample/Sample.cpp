@@ -1,6 +1,5 @@
 
-#include "Debug/Debug.hpp"
-#include "Json/Json.hpp"
+#include "../NotMoon/Json.hpp"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -24,7 +23,7 @@ int main()
 	}
 	using namespace NotMoon;
 	Json::Parser parser;
-	std::ifstream f{ "Sample.json" };
+	std::ifstream f{ "Sample/Sample.json" };
 	std::vector<char> buffer;
 	buffer.resize( static_cast<unsigned int>( f.seekg( 0, std::ios::end ).tellg() ) );
 	f.seekg( 0, std::ios::beg ).read( &buffer[ 0 ], static_cast<std::streamsize>( buffer.size() ) );
