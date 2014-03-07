@@ -78,17 +78,20 @@ namespace NotMoon
 
 		public:
 			template< typename T >
-			Meta::IfPointerThenConstPointerElseConstLvalueReferense< T > as();
+			using ResultType = Meta::IfPointerThenConstPointerElseConstLvalueReferense< T >;
+
+			template< typename T >
+			ResultType< T > as();
 		};
 
 		template<>
-		Meta::IfPointerThenConstPointerElseConstLvalueReferense< Number > Value::as<Number>()
+		Value::ResultType< Number > Value::as<Number>()
 		{
 			return *static_cast<Number*>( const_cast<void*>( p ) );
 		}
 
 		template<>
-		Meta::IfPointerThenConstPointerElseConstLvalueReferense< String > Value::as<String>()
+		Value::ResultType< String > Value::as<String>()
 		{
 			return static_cast<String>( const_cast<void*>( p ) );
 		}

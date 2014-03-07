@@ -18,7 +18,7 @@ namespace NotMoon
 		};
 
 		template<>
-		Meta::IfPointerThenConstPointerElseConstLvalueReferense< Array > Value::as<Array>()
+		Value::ResultType< Array > Value::as<Array>()
 		{
 			return *static_cast<Array*>( const_cast<void*>( p ) );
 		}

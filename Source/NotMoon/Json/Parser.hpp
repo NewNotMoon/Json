@@ -223,7 +223,7 @@ namespace NotMoon
 
 				for( char c = this->reader.getPrevious();; c = this->reader.read() )
 				{
-					if( this->getConvertTable()[ c ].number.tag == ConvertTable::Tag::Number )
+					if( this->getConvertTable()[ c - escapeNumber ].number.tag == ConvertTable::Tag::Number )
 					{
 						if( this->reader.isEof() )
 						{
