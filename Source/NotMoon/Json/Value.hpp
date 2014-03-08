@@ -1,11 +1,12 @@
 #ifndef NOTMOON_JSON_VALUE_HPP
 #define NOTMOON_JSON_VALUE_HPP
+#include <NotMoon/Include.hpp>
+
+#include <NotMoon/Json/Allocator.hpp>
+#include <NotMoon/Meta/Meta.hpp>
 
 #include <vector>
 #include <unordered_map>
-#include "../Debug/Debug.hpp"
-#include "Allocator.hpp"
-#include "../Meta/Meta.hpp"
 
 namespace NotMoon
 {
@@ -85,16 +86,10 @@ namespace NotMoon
 		};
 
 		template<>
-		Value::ResultType< Number > Value::as<Number>()
-		{
-			return *static_cast<Number*>( const_cast<void*>( p ) );
-		}
+		Value::ResultType< Number > Value::as<Number>();
 
 		template<>
-		Value::ResultType< String > Value::as<String>()
-		{
-			return static_cast<String>( const_cast<void*>( p ) );
-		}
+		Value::ResultType< String > Value::as<String>();
 	}
 }
 

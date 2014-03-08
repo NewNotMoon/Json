@@ -1,11 +1,8 @@
 #ifndef NOTMOON_DEBUG_DEBUG_HPP
 #define NOTMOON_DEBUG_DEBUG_HPP
-
-// あれ　デバッグ関連のアレ
-// NotMoonは全てこのヘッダいんくるーどしてね
+#include <NotMoon/Include.hpp>
 
 #include <iostream>
-#include <boost/predef.h>
 #if	defined( BOOST_COMP_MSVC )
 #	include <Windows.h>
 #	include <tchar.h>
@@ -19,10 +16,11 @@
 #		define NOTMOON_NEW new
 #		define NOTMOON_DEBUG_MESSAGE( mes )
 #	endif
+#endif
 
 namespace NotMoon
 {
-#if defined( _DEBUG )
+#if defined( NOTMOON_DEBUG )
 	class DebugStreambuf
 		: public std::streambuf
 	{
@@ -116,6 +114,5 @@ namespace NotMoon
 	};
 #endif
 }
-#endif
 
 #endif

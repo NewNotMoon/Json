@@ -74,7 +74,7 @@
     <LibraryPath>C:\Library\boost32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Library\boost32\include\boost-1_55;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Library\boost32\include\boost-1_55;C:\Project\Json\Source;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Library\boost32\lib;$(LibraryPath)</LibraryPath>
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)Binary\x64\$(Configuration)\</OutDir>
@@ -88,7 +88,7 @@
     <LibraryPath>C:\Library\boost32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Library\boost32\include\boost-1_55;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Library\boost32\include\boost-1_55;C:\Project\Json\Source;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Library\boost32\lib;$(LibraryPath)</LibraryPath>
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)Binary\x64\$(Configuration)\</OutDir>
@@ -165,6 +165,7 @@
   <ItemGroup>
     <ClInclude Include="NotMoon\Debug\Debug.hpp" />
     <ClInclude Include="NotMoon\Exception\Exception.hpp" />
+    <ClInclude Include="NotMoon\Include.hpp" />
     <ClInclude Include="NotMoon\Json.hpp" />
     <ClInclude Include="NotMoon\Json\Allocator.hpp" />
     <ClInclude Include="NotMoon\Json\Array.hpp" />
@@ -178,6 +179,8 @@
     <ClInclude Include="NotMoon\Meta\Meta.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="NotMoon\Json\Parser.cpp" />
+    <ClCompile Include="NotMoon\Json\Specialize.cpp" />
     <ClCompile Include="Sample\Sample.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

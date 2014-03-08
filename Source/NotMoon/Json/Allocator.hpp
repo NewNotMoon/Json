@@ -1,8 +1,8 @@
 #ifndef NOTMOON_JSON_ALLOCATOR_HPP
 #define NOTMOON_JSON_ALLOCATOR_HPP
+#include <NotMoon/Include.hpp>
 
-#include "Chunk.hpp"
-#include "../Debug/Debug.hpp"
+#include <NotMoon/Json/Chunk.hpp>
 
 namespace NotMoon
 {

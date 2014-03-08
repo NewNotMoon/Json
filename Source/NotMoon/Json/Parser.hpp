@@ -1,11 +1,12 @@
 #ifndef NOTMOON_JSON_PARSER_HPP
 #define NOTMOON_JSON_PARSER_HPP
+#include <NotMoon/Include.hpp>
 
-#include "Reader.hpp"
-#include "Array.hpp"
-#include "Object.hpp"
-#include "StringBuffer.hpp"
-#include "Exception.hpp"
+#include <NotMoon/Json/Reader.hpp>
+#include <NotMoon/Json/Array.hpp>
+#include <NotMoon/Json/Object.hpp>
+#include <NotMoon/Json/StringBuffer.hpp>
+#include <NotMoon/Json/Exception.hpp>
 
 namespace NotMoon
 {
@@ -114,7 +115,7 @@ namespace NotMoon
 				union Union
 				{ 
 					Value< Function > escape;
-					Value< unsigned char > hex;
+					Value< char > hex;
 					Value< unsigned char > number;
 				} table[ 256 ];
 
@@ -285,7 +286,8 @@ namespace NotMoon
 			// 文字を16進数で解釈して、対応する数値を返す
 			char convertCharToHex()
 			{
-				return this->getConvertTable()[ this->reader.read() ].hex.value;
+				auto t = this->getConvertTable()[ this->reader.read() ].hex.value;
+				return t;
 			};
 			// 16進数表記の文字を二つ読み込み、数値(8bit)に変換する
 			char readHex()
@@ -330,6 +332,7 @@ namespace NotMoon
 			{
 				this->buffer += '\n';
 			}
+			void parseEscapeUnicode();
 			Value parseString()
 			{
 				this->buffer.initialize();

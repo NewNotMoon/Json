@@ -1,7 +1,65 @@
-
-#include "../NotMoon/Json.hpp"
-#include <fstream>
+//===============================================================================================================================
+//!	
+//!	@file	Sample/Json.hpp
+//!	
+//!		NotMoon::Json サンプルソース
+//!	
+//!		The author is a high school student of Japanese. Therefore is English is unskilled. 
+//!		There may be a strange translation. When there is a mistranslation. Please you point out any mistakes to me.
+//!	
+//!	Copyright (C) 2014- 新々月 All Rights Reserved.
+//===============================================================================================================================
 #include <iostream>
+
+// NotMoon/Json.hppをインクルードしてください。
+// Please Include the NotMoon/Json.hpp.
+#include <NotMoon/Json.hpp>
+
+void excuteSample( const std::vector<char>& buffer )
+{
+	using namespace NotMoon::Json;
+
+	// 全ての操作にはまずParserクラスのインスタンスが必要です。
+	// Instance of the Parser class is required in the first operation of all.
+	Parser parser;
+
+	// Parser::parse関数によりパース及びルート要素の取得。
+	// Get the root element and parse by Parser::parse function.
+	auto& root = parser.parse( &buffer[ 0 ], &buffer[ 0 ] + buffer.size() );
+
+	// Value::getType関数により要素の種類を取得可能。値はValue::Type列挙型。
+	// You can acquire by Value::getType function the kind of value. It is Value::Type enumerated type.
+	if( root.getType() == Value::Type::Array )
+	{
+		// 要素はValue::as<T>関数により変換する。Value::as<T>関数は文字列型を除き参照を返す。
+		// You can converted by the Value::as<T> function. Value::as<T> function returns a reference except for the string type.
+		auto& arr = root.as<Array>();
+
+		// 配列は添字アクセス可能。
+		// Array is accessible by subscript.
+		auto& obj = arr[ 0 ].as<Object>();
+
+		// オブジェクトも添字アクセス可能。文字列のみNUL終端するポインタで返るため注意。
+		// Object also accessible by subscript. Please note because the string only returns with the null-terminated string.
+		auto str = obj[ "created_at" ].as<String>();
+
+		// 数値はdouble型。
+		// Numbers is double precision real number type.
+		auto& num = obj[ "number" ].as<Number>();
+
+		std::string txt{ obj[ "text" ].as<String>() };
+		std::cout << str << std::endl;
+		std::cout << num << std::endl;
+		for( auto& i : txt )
+		{
+			std::cout << i << std::endl;
+		}
+	}
+	//! 各要素の寿命はParserクラスのインスタンスと同じ。以後のアクセスは保証されない。
+	//! Life of each element is the same as the instance of the Parser class. Future access is not guaranteed.
+};
+
+#include <fstream>
 #include <string>
 
 int main()
@@ -21,8 +79,6 @@ int main()
 			<< "Message: " << e.message << std::endl;
 #endif
 	}
-	using namespace NotMoon;
-	Json::Parser parser;
 	std::ifstream f{ "Sample/Sample.json" };
 	if( f.fail() )
 	{
@@ -33,13 +89,9 @@ int main()
 	std::vector<char> buffer;
 	buffer.resize( static_cast<unsigned int>( f.seekg( 0, std::ios::end ).tellg() ) );
 	f.seekg( 0, std::ios::beg ).read( &buffer[ 0 ], static_cast<std::streamsize>( buffer.size() ) );
-	auto& root = parser.parse( &buffer[ 0 ], &buffer[ 0 ] + buffer.size() );
-	auto& arr = root.as<Json::Array>();
-	auto& obj = arr[ 0 ].as<Json::Object>();
-	auto str = obj[ "created_at" ].as<Json::String>();
-	auto&  num = obj[ "number" ].as<Json::Number>();
-	std::cout << str << std::endl;
-	std::cout << num << std::endl;
+
+	excuteSample( buffer );
+
 #ifndef _DEBUG
 	std::cin >> std::string{};
 #endif

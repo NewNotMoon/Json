@@ -1,8 +1,8 @@
 #ifndef NOTMOON_JSON_CHUNK_HPP
 #define NOTMOON_JSON_CHUNK_HPP
+#include <NotMoon/Include.hpp>
 
 #include <vector>
-#include "../Debug/Debug.hpp"
 
 namespace NotMoon
 {

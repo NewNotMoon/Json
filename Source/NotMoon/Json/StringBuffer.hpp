@@ -1,7 +1,8 @@
 #ifndef NOTMOON_JSON_STRINGBUFFER_HPP
 #define NOTMOON_JSON_STRINGBUFFER_HPP
+#include <NotMoon/Include.hpp>
 
-#include "Allocator.hpp"
+#include <NotMoon/Json/Allocator.hpp>
 
 namespace NotMoon
 {

@@ -1,7 +1,8 @@
 #ifndef NOTMOON_JSON_EXCEPTION_HPP
 #define NOTMOON_JSON_EXCEPTION_HPP
+#include <NotMoon/Include.hpp>
 
-#include "../Exception/Exception.hpp"
+#include <NotMoon/Exception/Exception.hpp>
 
 namespace NotMoon
 {

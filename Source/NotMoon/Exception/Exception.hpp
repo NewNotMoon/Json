@@ -1,12 +1,12 @@
 #ifndef NOTMOON_EXCEPTION_EXCEPTION_HPP
 #define NOTMOON_EXCEPTION_EXCEPTION_HPP
+#include <NotMoon/Include.hpp>
 
 #include <exception>
-#include <boost/predef.h>
 
 namespace NotMoon
 {
-	extern const char* nullString = "";
+	static const char* nullString = "";
 	struct Exception
 		: public std::exception
 	{

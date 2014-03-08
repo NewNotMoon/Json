@@ -1,7 +1,8 @@
 #ifndef NOTMOON_JSON_OBJECT_HPP
 #define NOTMOON_JSON_OBJECT_HPP
+#include <NotMoon/Include.hpp>
 
-#include "Value.hpp"
+#include <NotMoon/Json/Value.hpp>
 
 namespace NotMoon
 {
@@ -48,10 +49,7 @@ namespace NotMoon
 		};
 
 		template<>
-		Value::ResultType< Object > Value::as<Object>()
-		{
-			return *static_cast<Object*>( const_cast<void*>( p ) );
-		}
+		Value::ResultType< Object > Value::as<Object>();
 	}
 }
 

@@ -1,7 +1,6 @@
 #ifndef NOTMOON_JSON_READER_HPP
 #define NOTMOON_JSON_READER_HPP
-
-#include "../Debug/Debug.hpp"
+#include <NotMoon/Include.hpp>
 
 namespace NotMoon
 {

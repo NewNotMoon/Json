@@ -75,10 +75,19 @@
     <ClInclude Include="NotMoon\Meta\Meta.hpp">
       <Filter>Source\NotMoon\Meta</Filter>
     </ClInclude>
+    <ClInclude Include="NotMoon\Include.hpp">
+      <Filter>Source\NotMoon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sample\Sample.cpp">
       <Filter>Source\Sample</Filter>
+    </ClCompile>
+    <ClCompile Include="NotMoon\Json\Parser.cpp">
+      <Filter>Source\NotMoon\Json</Filter>
+    </ClCompile>
+    <ClCompile Include="NotMoon\Json\Specialize.cpp">
+      <Filter>Source\NotMoon\Json</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

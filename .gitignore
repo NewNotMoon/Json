@@ -213,3 +213,4 @@ pip-log.txt
 
 /src/Json/s/Json.hpp
 Source/Json/s/Json.hpp
+/Source/NotMoon/Json/Parser.cpp

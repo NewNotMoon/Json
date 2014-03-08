@@ -1,5 +1,6 @@
 #ifndef NOTMOON_META_META_HPP
 #define NOTMOON_META_META_HPP
+#include <NotMoon/Include.hpp>
 
 #include <type_traits>
 
