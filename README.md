@@ -47,14 +47,38 @@ Bug List
 
 Change Log (Only those related to the use)
 -------------------------------------------------------------------------------
-* 2014-03-07 数値のパースが出来ないバグを修正
-* 2014-03-06 ライセンス記載
-* 2014-03-06 メモリリークするバグを修正
+* 2014-03-08 
+	+ ライブラリのライセンスを記載(GPL準拠)
+	  LICENSE: The license description.
+* 2014-03-07  
+	+ 数値のパースが出来ないバグを修正  
+	  BUGFIX: Number cannot correctly parse.
+* 2014-03-06  
+	+ 外部ライブラリに関するライセンス記載  
+	  LICENSE: The license description of the external library.
+	+ メモリリークするバグを修正  
+	  BUGFIX: Memory leak.
 
 License
 -------------------------------------------------------------------------------
-このライブラリ自体は未完成なのでまだライセンスは記述していません。
-以下は使用している外部ライブラリのライセンスです。
+NotMoon Json Parser Library
+
+Copyright (C) 2014- 新々月(NewNotMoon)
+
+Distributed under the GNU General Public License, version 3.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+Detail about the GNU General Public License refer to
+http://www.gnu.org/licenses/gpl-3.0.txt or License/gpl-3.0.txt.
 
 ### Boost C++ Library
 > Boost Software License - Version 1.0 - August 17th, 2003

@@ -115,7 +115,7 @@ namespace NotMoon
 				union Union
 				{ 
 					Value< Function > escape;
-					Value< char > hex;
+					Value< unsigned char > hex;
 					Value< unsigned char > number;
 				} table[ 256 ];
 
