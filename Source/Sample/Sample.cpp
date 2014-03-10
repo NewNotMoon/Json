@@ -1,69 +1,72 @@
-//===============================================================================================================================
+ï»¿//===============================================================================================================================
 //!	
 //!	@file	Sample/Json.hpp
 //!	
-//!		NotMoon::Json ƒTƒ“ƒvƒ‹ƒ\[ƒX
+//!		NotMoon::Json ã‚µãƒ³ãƒ—ãƒ«ã‚½ãƒ¼ã‚¹
 //!	
 //!		The author is a high school student of Japanese. Therefore is English is unskilled. 
 //!		There may be a strange translation. When there is a mistranslation. Please you point out any mistakes to me.
 //!	
-//!	Copyright (C) 2014- VXŒ All Rights Reserved.
+//!	Copyright (C) 2014- æ–°ã€…æœˆ All Rights Reserved.
 //===============================================================================================================================
 #include <iostream>
+#include <string>
 
-// NotMoon/Json.hpp‚ğƒCƒ“ƒNƒ‹[ƒh‚µ‚Ä‚­‚¾‚³‚¢B
+void outputUtf8( std::string& str );
+
+// NotMoon/Json.hppã‚’ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ã—ã¦ãã ã•ã„ã€‚
 // Please Include the NotMoon/Json.hpp.
 #include <NotMoon/Json.hpp>
 
-void excuteSample( const std::vector<char>& buffer )
+int excuteSample( const std::vector<char>& buffer )
 {
 	using namespace NotMoon::Json;
 
-	// ‘S‚Ä‚Ì‘€ì‚É‚Í‚Ü‚¸ParserƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ª•K—v‚Å‚·B
+	// å…¨ã¦ã®æ“ä½œã«ã¯ã¾ãšParserã‚¯ãƒ©ã‚¹ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãŒå¿…è¦ã§ã™ã€‚
 	// Instance of the Parser class is required in the first operation of all.
 	Parser parser;
 
-	// Parser::parseŠÖ”‚É‚æ‚èƒp[ƒX‹y‚Ñƒ‹[ƒg—v‘f‚Ìæ“¾B
+	// Parser::parseé–¢æ•°ã«ã‚ˆã‚Šãƒ‘ãƒ¼ã‚¹åŠã³ãƒ«ãƒ¼ãƒˆè¦ç´ ã®å–å¾—ã€‚
 	// Get the root element and parse by Parser::parse function.
 	auto& root = parser.parse( &buffer[ 0 ], &buffer[ 0 ] + buffer.size() );
 
-	// Value::getTypeŠÖ”‚É‚æ‚è—v‘f‚Ìí—Ş‚ğæ“¾‰Â”\B’l‚ÍValue::Type—ñ‹“Œ^B
+	// Value::getTypeé–¢æ•°ã«ã‚ˆã‚Šè¦ç´ ã®ç¨®é¡ã‚’å–å¾—å¯èƒ½ã€‚å€¤ã¯Value::Typeåˆ—æŒ™å‹ã€‚
 	// You can acquire by Value::getType function the kind of value. It is Value::Type enumerated type.
 	if( root.getType() == Value::Type::Array )
 	{
-		// —v‘f‚ÍValue::as<T>ŠÖ”‚É‚æ‚è•ÏŠ·‚·‚éBValue::as<T>ŠÖ”‚Í•¶š—ñŒ^‚ğœ‚«QÆ‚ğ•Ô‚·B
+		// è¦ç´ ã¯Value::as<T>é–¢æ•°ã«ã‚ˆã‚Šå¤‰æ›ã™ã‚‹ã€‚Value::as<T>é–¢æ•°ã¯æ–‡å­—åˆ—å‹ã‚’é™¤ãå‚ç…§ã‚’è¿”ã™ã€‚
 		// You can converted by the Value::as<T> function. Value::as<T> function returns a reference except for the string type.
 		auto& arr = root.as<Array>();
 
-		// ”z—ñ‚Í“YšƒAƒNƒZƒX‰Â”\B
+		// é…åˆ—ã¯æ·»å­—ã‚¢ã‚¯ã‚»ã‚¹å¯èƒ½ã€‚
 		// Array is accessible by subscript.
 		auto& obj = arr[ 0 ].as<Object>();
 
-		// ƒIƒuƒWƒFƒNƒg‚à“YšƒAƒNƒZƒX‰Â”\B•¶š—ñ‚Ì‚İNULI’[‚·‚éƒ|ƒCƒ“ƒ^‚Å•Ô‚é‚½‚ß’ˆÓB
+		// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚‚æ·»å­—ã‚¢ã‚¯ã‚»ã‚¹å¯èƒ½ã€‚æ–‡å­—åˆ—ã®ã¿NULçµ‚ç«¯ã™ã‚‹ãƒã‚¤ãƒ³ã‚¿ã§è¿”ã‚‹ãŸã‚æ³¨æ„ã€‚
 		// Object also accessible by subscript. Please note because the string only returns with the null-terminated string.
-		auto str = obj[ "created_at" ].as<String>();
+		auto str = obj[ "created_at" ].as<String*>();
 
-		// ”’l‚ÍdoubleŒ^B
+		// \uXXXXå½¢å¼ã®æ–‡å­—åˆ—ã‚‚ãƒ‘ãƒ¼ã‚¹å¯èƒ½
+		auto txt = obj[ "text" ].as<String*>();
+
+		// æ•°å€¤ã¯doubleå‹ã€‚
 		// Numbers is double precision real number type.
 		auto& num = obj[ "number" ].as<Number>();
 
-		std::string txt{ obj[ "text" ].as<String>() };
-		std::cout << str << std::endl;
 		std::cout << num << std::endl;
-		for( auto& i : txt )
-		{
-			std::cout << i << std::endl;
-		}
+		outputUtf8( std::string{ txt } );
+		outputUtf8( std::string{ str } );
 	}
-	//! Še—v‘f‚Ìõ–½‚ÍParserƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Æ“¯‚¶BˆÈŒã‚ÌƒAƒNƒZƒX‚Í•ÛØ‚³‚ê‚È‚¢B
+	//! å„è¦ç´ ã®å¯¿å‘½ã¯Parserã‚¯ãƒ©ã‚¹ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã¨åŒã˜ã€‚ä»¥å¾Œã®ã‚¢ã‚¯ã‚»ã‚¹ã¯ä¿è¨¼ã•ã‚Œãªã„ã€‚
 	//! Life of each element is the same as the instance of the Parser class. Future access is not guaranteed.
+	return 0;
 };
 
 #include <fstream>
-#include <string>
 
 int main()
 {
+	std::locale::global( std::locale( "japanese" ) );
 	NotMoon::Debug d;
 	try
 	{
@@ -73,10 +76,10 @@ int main()
 	{
 #if defined( NOTMOON_EXCEPTION_DETAIL )
 		std::cout
-			<< "File: " << e.file << std::endl
-			<< "Line: " << e.line << std::endl
-			<< "Func: " << e.func << std::endl
-			<< "Message: " << e.message << std::endl;
+			<< "\tFile: " << e.file << std::endl
+			<< "\tLine: " << e.line << std::endl
+			<< "\tFunc: " << e.func << std::endl
+			<< "\tMessage: " << e.message << std::endl;
 #endif
 	}
 	std::ifstream f{ "Sample/Sample.json" };
@@ -89,10 +92,49 @@ int main()
 	std::vector<char> buffer;
 	buffer.resize( static_cast<unsigned int>( f.seekg( 0, std::ios::end ).tellg() ) );
 	f.seekg( 0, std::ios::beg ).read( &buffer[ 0 ], static_cast<std::streamsize>( buffer.size() ) );
-
+	
 	excuteSample( buffer );
 
-#ifndef _DEBUG
 	std::cin >> std::string{};
+#ifndef _DEBUG
 #endif
 }
+
+void outputUtf8( std::string& str )
+{
+	unsigned char lead;
+	int char_size = 0;
+
+	for( std::string::iterator it = str.begin(); it != str.end(); it += char_size )
+	{
+		lead = *it;
+
+		if( lead < 0x80 )
+		{
+			char_size = 1;
+			std::cout << str.substr( distance( str.begin(), it ), char_size );
+		}
+		else if( lead < 0xE0 )
+		{
+			char_size = 2;
+			std::cout << str.substr( distance( str.begin(), it ), char_size );
+		}
+		else if( lead < 0xF0 )
+		{
+			char_size = 3;
+			char* s = &*it;
+			wchar_t u[ 2 ];
+			u[ 0 ] = ( ( s[ 0 ] & 0x0f ) << 12 )
+					| ( ( s[ 1 ] & 0x3f ) << 6 )
+					| ( s[ 2 ] & 0x3f );
+			u[ 1 ] = L'\0';
+			std::wcout << u[ 0 ] << std::flush;
+		}
+		else
+		{
+			char_size = 4;
+			std::cout << str.substr( distance( str.begin(), it ), char_size );
+		}
+	}
+	std::cout << std::endl;
+};

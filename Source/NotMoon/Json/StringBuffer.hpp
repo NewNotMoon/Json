@@ -11,13 +11,13 @@ namespace NotMoon
 		class StringBuffer
 		{
 		private:
-			char*				buffer;
+			String*				buffer;
 			size_t				length;
 			size_t				max;
-			Allocator<char>&	allocator;
+			Allocator<String>	allocator;
 
 		public:
-			StringBuffer( Allocator<char>& allocator, size_t s = 0 )
+			StringBuffer( Allocator<String> allocator, size_t s = 0 )
 				: allocator{ allocator }
 			{
 				this->initialize( s );
@@ -30,7 +30,7 @@ namespace NotMoon
 				this->max = size;
 			}
 
-			void append( char c )
+			void append( String c )
 			{
 				if( this->max < 1 + this->length )
 				{
@@ -39,7 +39,7 @@ namespace NotMoon
 				this->buffer[ this->length++ ] = c;
 			}
 
-			void append( const char* begin, const char* end )
+			void append( const String* begin, const String* end )
 			{
 				size_t s = end - begin;
 				if( this->max < s + this->length )
@@ -49,25 +49,25 @@ namespace NotMoon
 				copy( this->buffer + this->length, begin, s );
 				this->length += s;
 			}
-
-			void operator+=( char c )
+			
+			void operator+=( String c )
 			{
 				this->append( c );
 			}
 
-			char* getEnd()
+			String* getEnd()
 				const
 			{
 				return this->buffer + this->length;
 			}
 
-			char* getBuffer()
+			String* getBuffer()
 				const
 			{
 				return this->buffer;
 			}
 
-			char* convertCString()
+			String* convertCString()
 			{
 				this->append( '\0' );
 				return this->buffer;
@@ -77,18 +77,27 @@ namespace NotMoon
 			{
 				if( this->allocator.isRange( this->buffer + this->length + num ) )
 				{
-					char* t = this->allocator.allocate( num + this->length );
+					String* t = this->allocator.allocate( num + this->length );
 					copy( t, this->buffer, this->length );
 					this->buffer = t;
 				}
 			}
 
 		public:
-			static inline void copy( char* target, const char* source, size_t n )
+			template < typename T >
+			static inline void copy( T* target, const T* source, size_t n )
 			{
 				for( size_t i = 0; i < n; ++i )
 				{
 					target[ i ] = source[ i ];
+				}
+			}
+			template < typename T, typename U >
+			static inline void copy( T* target, const U* source, size_t n )
+			{
+				for( size_t i = 0; i < n; ++i )
+				{
+					target[ i ] = static_cast< T >( source[ i ] );
 				}
 			}
 		};

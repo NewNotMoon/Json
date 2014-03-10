@@ -24,7 +24,13 @@ namespace NotMoon
 	class DebugStreambuf
 		: public std::streambuf
 	{
+		char buffer[ 1024 ];
 	public:
+		DebugStreambuf()
+		{
+			setp( buffer, buffer+1024 );
+			setg( buffer, buffer, buffer+1024 );
+		}
 		virtual std::streampos seekoff(
 			std::streamoff off,
 			std::ios::seek_dir dir,
@@ -39,6 +45,16 @@ namespace NotMoon
 		{
 			return EOF;
 		}
+		virtual int sync()
+			override
+		{
+			*pptr() = '\0';    // 終端文字を追加します。
+			DWORD size;
+			WriteConsoleA( GetStdHandle( STD_OUTPUT_HANDLE ), buffer, static_cast<DWORD>( pptr() - pbase() ), &size, NULL );
+			OutputDebugStringA( buffer );
+			pbump( static_cast<int>( pbase() - pptr() ) );
+			return 0;
+		}
 		virtual int_type overflow( int_type c = EOF )
 			override
 		{
@@ -46,12 +62,65 @@ namespace NotMoon
 			{
 				char buf[ ] ={ c, '\0' };
 				DWORD size;
-				WriteConsole( GetStdHandle( STD_OUTPUT_HANDLE ), buf, 1, &size, NULL );
-				OutputDebugStringA( buf );
+				WriteConsoleA( GetStdHandle( STD_OUTPUT_HANDLE ), buffer, 1, &size, NULL );
+				OutputDebugStringA( buffer );
 			}
 			return c;
 		}
 		virtual int underflow()
+			override
+		{
+			return EOF;
+		}
+	};
+
+	class DebugStreambufWide
+		: public std::wstreambuf
+	{
+		wchar_t buffer[ 1024 ];
+	public:
+		DebugStreambufWide()
+		{
+			setp( buffer, buffer + 1024 );
+			setg( buffer, buffer, buffer + 1024 );
+		}
+		virtual std::wstreampos seekoff(
+			std::streamoff off,
+			std::ios::seek_dir dir,
+			std::ios::openmode nMode = std::ios::in | std::ios::out )
+		{
+			return EOF;
+		}
+		virtual std::wstreampos seekpos(
+			std::wstreampos pos,
+			std::ios::openmode nMode = std::ios::in | std::ios::out )
+			override
+		{
+			return EOF;
+		}
+		virtual int sync()
+			override
+		{
+			*pptr() = L'\0';    // 終端文字を追加します。
+			DWORD size;
+			WriteConsoleW( GetStdHandle( STD_OUTPUT_HANDLE ), buffer, static_cast<DWORD>( pptr() - pbase() ), &size, NULL );
+			OutputDebugStringW( buffer );
+			pbump( static_cast<int>( pbase() - pptr() ) );    // 書き込み位置をリセットします。
+			return 0;
+		}
+		virtual int_type overflow( int_type c = EOF )
+			override
+		{
+			if( c != EOF )
+			{
+				wchar_t buf[ ] ={ c, '\0' };
+				DWORD size;
+				WriteConsoleW( GetStdHandle( STD_OUTPUT_HANDLE ), buf, 1, &size, NULL );
+				OutputDebugStringW( buf );
+			}
+			return c;
+		}
+		virtual wint_t underflow()
 			override
 		{
 			return EOF;
@@ -65,19 +134,23 @@ namespace NotMoon
 	private:
 		MemoryState data;
 		DebugStreambuf stream;
+		DebugStreambufWide streamWide;
 		std::streambuf *oldstream;
+		std::wstreambuf *oldstreamWide;
 
 	public:
 		Debug()
 		{
 			::_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
-			oldstream = std::cout.rdbuf( &this->stream );
+			this->oldstream = std::cout.rdbuf( &this->stream );
+			this->oldstreamWide = std::wcout.rdbuf( &this->streamWide );
 		}
 		~Debug()
 		{
 			this->capture();
 			this->dumpMemory( this->data );
 			std::cout.rdbuf( this->oldstream );
+			std::wcout.rdbuf( this->oldstreamWide );
 		}
 
 		MemoryState capture()

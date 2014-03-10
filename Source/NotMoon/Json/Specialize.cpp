@@ -11,9 +11,9 @@ Value::ResultType< Number > Value::as<Number>()
 }
 
 template<>
-Value::ResultType< String > Value::as<String>()
+Value::ResultType< String* > Value::as<String*>()
 {
-	return static_cast<String>( const_cast<void*>( p ) );
+	return static_cast<String*>( const_cast<void*>( p ) );
 }
 
 template<>

@@ -74,8 +74,8 @@
     <LibraryPath>C:\Library\boost32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Library\boost32\include\boost-1_55;C:\Project\Json\Source;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Library\boost32\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Library\boost32\include\boost-1_55;C:\Project\Json\Source;C:\Library\icu\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Library\boost32\lib;C:\Library\icu\lib64;$(LibraryPath)</LibraryPath>
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)Binary\x64\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Temporary\x64\$(Configuration)\</IntDir>
@@ -88,8 +88,8 @@
     <LibraryPath>C:\Library\boost32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Library\boost32\include\boost-1_55;C:\Project\Json\Source;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Library\boost32\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Library\boost32\include\boost-1_55;C:\Project\Json\Source;C:\Library\icu\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Library\boost32\lib;C:\Library\icu\lib64;$(LibraryPath)</LibraryPath>
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)Binary\x64\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Temporary\x64\$(Configuration)\</IntDir>
@@ -167,6 +167,7 @@
     <ClInclude Include="NotMoon\Exception\Exception.hpp" />
     <ClInclude Include="NotMoon\Include.hpp" />
     <ClInclude Include="NotMoon\Json.hpp" />
+    <ClInclude Include="NotMoon\Json\Alias.hpp" />
     <ClInclude Include="NotMoon\Json\Allocator.hpp" />
     <ClInclude Include="NotMoon\Json\Array.hpp" />
     <ClInclude Include="NotMoon\Json\Chunk.hpp" />

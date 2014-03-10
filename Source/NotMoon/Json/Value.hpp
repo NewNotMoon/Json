@@ -2,6 +2,7 @@
 #define NOTMOON_JSON_VALUE_HPP
 #include <NotMoon/Include.hpp>
 
+#include <NotMoon/Json/Alias.hpp>
 #include <NotMoon/Json/Allocator.hpp>
 #include <NotMoon/Meta/Meta.hpp>
 
@@ -14,15 +15,15 @@ namespace NotMoon
 	{
 		struct EqualCString
 		{
-			bool operator()( const char* l, const char* r )
+			bool operator()( const String* l, const String* r )
 			{
-				return ( std::strcmp( l, r ) == 0 );
+				return ( std::strcmp( (char *)l, (char *)r ) == 0 );
 			}
 		};
 
 		struct HashCString
 		{
-			size_t operator()( const char* l )
+			size_t operator()( const String* l )
 			{
 				static std::hash<std::string> hash;
 				return hash( std::string{ l } );
@@ -30,12 +31,8 @@ namespace NotMoon
 		};
 
 		class Value;
-		using Null			= unsigned int;
-		using Boolean		= bool;
-		using Number		= double;
-		using String		= char*;
-		using Pair			= std::pair< char*, Value >;
-		using Map			= std::unordered_map< const char*, Value, HashCString, EqualCString, Allocator< Pair > >;
+		using Pair			= std::pair< String*, Value >;
+		using Map			= std::unordered_map< const String*, Value, HashCString, EqualCString, Allocator< Pair > >;
 		using Vector		= std::vector< Value, Allocator< Value > >;
 		class Array;
 		class Object;
@@ -89,7 +86,7 @@ namespace NotMoon
 		Value::ResultType< Number > Value::as<Number>();
 
 		template<>
-		Value::ResultType< String > Value::as<String>();
+		Value::ResultType< String* > Value::as<String*>();
 	}
 }
 

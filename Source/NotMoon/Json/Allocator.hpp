@@ -2,6 +2,7 @@
 #define NOTMOON_JSON_ALLOCATOR_HPP
 #include <NotMoon/Include.hpp>
 
+#include <NotMoon/Json/Alias.hpp>
 #include <NotMoon/Json/Chunk.hpp>
 
 namespace NotMoon
@@ -96,17 +97,17 @@ namespace NotMoon
 				}
 			}
 
-			void setTail( char* ptr )
+			void setTail( String* ptr )
 			{
-				this->cnk.offset = ptr - this->cnk.chunks.back();
+				this->cnk.offset = (char*)ptr - this->cnk.chunks.back();
 			}
 
 			// 引数のポインタ(ptr)が、あらかじめ確保しているメモリブロックの範囲内かどうかを判定する
 			// 範囲外なら、trueを返す
 			// ※ 上限のみをチェックしている
-			bool isRange( char* ptr )
+			bool isRange( String* ptr )
 			{
-				return this->cnk.chunks.back() + this->cnk.maxSize <= ptr;
+				return this->cnk.chunks.back() + this->cnk.maxSize <= (void*)ptr;
 			}
 			const Chunk& getChunk() const
 			{

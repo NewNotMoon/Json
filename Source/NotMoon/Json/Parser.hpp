@@ -15,18 +15,18 @@ namespace NotMoon
 	{
 		if( static_cast<unsigned char>( fst ) >= 0x08 )
 		{
-			to += 0xE0 | ( 0xF0 & fst ) >> 4;
-			to += 0x80 | ( 0x0F & fst ) << 2 | ( 0xC0 & snd ) >> 6;
-			to += 0x80 | 0x3F & snd;
+			to += ( 0xE0 | ( 0xF0 & fst ) >> 4 );
+			to += ( 0x80 | ( 0x0F & fst ) << 2 | ( 0xC0 & snd ) >> 6 );
+			to += ( 0x80 | 0x3F & snd );
 		}
 		else if( fst != 0 || static_cast<unsigned char>( snd ) >= 0x80 )
 		{
-			to += 0xC0 | ( fst & 0x7 ) << 2 | ( snd & 0xC0 ) >> 6;
-			to += 0x80 | 0x3F & snd;
+			to += ( 0xC0 | ( fst & 0x7 ) << 2 | ( snd & 0xC0 ) >> 6 );
+			to += ( 0x80 | 0x3F & snd );
 		}
 		else
 		{
-			to += snd;
+			to += ( snd );
 		}
 	}
 
@@ -240,7 +240,7 @@ namespace NotMoon
 			end:
 				buffer.append( begin, this->reader.getCurrent() );
 				buffer.convertCString();
-				char* end;
+				String* end;
 				double *d = reinterpret_cast<double*>( this->allocator.allocate( sizeof( double ) ) );
 				*d = std::strtod( buffer.convertCString(), &end );
 				return Value( Value::Type::Number, d );
@@ -259,7 +259,7 @@ namespace NotMoon
 							Value key = parseString();
 							if( this->reader.skipSpace() == ':' )
 							{
-								auto k = key.as<String>();
+								auto k = key.as<String*>();
 								o->insert( Pair{ k, parseValue() } );
 							}
 						}
@@ -292,11 +292,26 @@ namespace NotMoon
 			// 16進数表記の文字を二つ読み込み、数値(8bit)に変換する
 			char readHex()
 			{
-				return this->convertCharToHex() << 4 | this->convertCharToHex();
+				auto t = this->convertCharToHex() << 4 | this->convertCharToHex();
+				return t;
 			};
 			// "\uXXXX"形式の文字列を読み込む(UTF-8に変換する)
 			void parseUtf16()
 			{
+				//// \uXXXX\0
+				//char src[] =
+				//{
+				//	*( this->reader.getCurrent() - 2 ),
+				//	*( this->reader.getCurrent() - 1 ),
+				//	*( this->reader.getCurrent() ),
+				//	*( this->reader.getCurrent() + 1 ),
+				//	*( this->reader.getCurrent() + 2 ),
+				//	*( this->reader.getCurrent() + 3 ),
+				//	'\0'
+				//};
+				//this->reader.seek( 4 );
+				//this->buffer.append( '\0' );
+				//auto i = u_unescape( src, this->buffer.getEnd() - 1, 1 );
 				char fst = this->readHex();
 				char snd = this->readHex();
 
@@ -304,7 +319,9 @@ namespace NotMoon
 				{
 					if( this->reader.read() == '\\' && this->reader.read() == 'u' )
 					{
-						encodeSurrogateUcs2ToUtf8( fst, snd, this->readHex(), this->readHex(), this->buffer );
+						auto thd = this->readHex();
+						auto fth = this->readHex();
+						encodeSurrogateUcs2ToUtf8( fst, snd, thd, fth, this->buffer );
 					}
 				}
 				else
@@ -332,7 +349,6 @@ namespace NotMoon
 			{
 				this->buffer += '\n';
 			}
-			void parseEscapeUnicode();
 			Value parseString()
 			{
 				this->buffer.initialize();

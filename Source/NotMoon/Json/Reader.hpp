@@ -82,6 +82,10 @@ namespace NotMoon
 			{
 				return *this->current++;
 			}
+			const char* seek( size_t n )
+			{
+				return this->current += n;
+			}
 			void goBack()
 			{
 				--this->current;

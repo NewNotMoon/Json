@@ -17,7 +17,7 @@ namespace NotMoon
 			{
 			}
 
-			Value& operator[]( const char* key )
+			Value& operator[]( const String* key )
 			{
 				static Value undefined;
 				auto it = this->find( key );
@@ -31,7 +31,7 @@ namespace NotMoon
 				}
 			}
 
-			const Value& operator[]( const char* key )
+			const Value& operator[]( const String* key )
 				const
 			{
 				static const Value undefined;

@@ -78,6 +78,9 @@
     <ClInclude Include="NotMoon\Include.hpp">
       <Filter>Source\NotMoon</Filter>
     </ClInclude>
+    <ClInclude Include="NotMoon\Json\Alias.hpp">
+      <Filter>Source\NotMoon\Json</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sample\Sample.cpp">
